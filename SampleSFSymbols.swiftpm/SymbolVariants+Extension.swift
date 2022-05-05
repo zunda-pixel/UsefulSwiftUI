@@ -13,8 +13,7 @@ extension SymbolVariants: CaseIterable, RawRepresentable, Identifiable {
       case "circle": self = .circle
       case "slash": self = .slash
       case "none": self = .none
-      default:
-        return nil
+      default: return nil
     }
   }
 
