@@ -1,28 +1,23 @@
 import SwiftUI
 import CoreLocation
+import CoreLocationUI
 
 struct StaticLocationView: View {
   @StateObject var viewModel: StaticLocationViewModel
 
   var body: some View {
     VStack {
-      Button {
+      LocationButton(.currentLocation) {
         Task {
-          await viewModel.getLocation()
+          viewModel.place = await viewModel.getLocation()
         }
-      } label: {
-        Text("Get Location")
       }
-      .disabled(viewModel.loadingLocation)
-      .alert("Location Error", isPresented: $viewModel.didLocationError) {
-      } message: {
-        Text("Not found location")
-      }
-      .alert("Location Error", isPresented: $viewModel.didAuthorizationError) {
-      } message: {
-        Text("Authorization Error")
-      }
-      ForEach(viewModel.places, id: \.location) { place in
+      .symbolVariant(.circle)
+      .tint(.red)
+      .foregroundStyle(.white)
+      .labelStyle(.iconOnly)
+
+      if let place = viewModel.place {
         LocationCellView(place: place)
           .padding()
           .overlay {
@@ -34,48 +29,31 @@ struct StaticLocationView: View {
   }
 }
 
-@MainActor  class StaticLocationViewModel: ObservableObject {
-  @Published var places: [CLPlacemark] = []
-  @Published var didAuthorizationError = false
-  @Published var didLocationError = false
-  @Published var loadingLocation = false
+@MainActor class StaticLocationViewModel: NSObject, ObservableObject {
+  @Published var place: CLPlacemark?
+  @Published var error: Error?
+  private let manager = CLLocationManager()
 
-  func getLocation() async {
-    defer {
-      loadingLocation = false
+  override init() {
+    super.init()
+    manager.delegate = self
+  }
+
+  func getLocation() async -> CLPlacemark? {
+    guard let location =  manager.location else {
+      return nil
     }
 
-    loadingLocation = true
+    let places = try? await CLGeocoder().reverseGeocodeLocation(location)
 
-    let locationManager = CLLocationManager()
+    return places?.last
+  }
+}
 
-    switch locationManager.authorizationStatus {
-      case .notDetermined:
-        locationManager.requestWhenInUseAuthorization()
-        return
-      case .restricted:
-        didAuthorizationError = true
-        return
-      case .denied:
-        didAuthorizationError = true
-        return
-      case .authorizedAlways:
-        break
-      case .authorizedWhenInUse:
-        break
-      @unknown default:
-        fatalError()
-    }
-
-    guard let location = locationManager.location else {
-      didLocationError = true
-      return
-    }
-
-    do {
-      self.places = try await CLGeocoder().reverseGeocodeLocation(location)
-    } catch {
-      print(error)
+extension StaticLocationViewModel: CLLocationManagerDelegate {
+  func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    Task {
+      self.place = await getLocation()
     }
   }
 }
