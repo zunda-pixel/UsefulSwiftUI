@@ -3,9 +3,7 @@ import PhotosUI
 import AVKit
 
 struct PhotoView: View {
-  let provider: NSItemProvider
-
-  @Binding var item: NSItemProviderReading?
+  let item: NSItemProviderReading
   @State var isPresentedVideoPlayer = false
   @State var didError = false
   @State var error: PhotoError?
@@ -48,20 +46,6 @@ struct PhotoView: View {
     }
     .alert(isPresented: $didError, error: error) {
       Text("load error")
-    }
-    .onAppear {
-      if item != nil {
-        return
-      }
-
-      Task {
-        do {
-          item = try await provider.loadPhoto()
-        } catch let newError {
-          self.error = newError as? PhotoError ?? .unknown
-          self.didError = true
-        }
-      }
     }
   }
 }
