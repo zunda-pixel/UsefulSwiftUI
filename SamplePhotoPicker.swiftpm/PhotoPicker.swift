@@ -41,7 +41,6 @@ struct PhotoPicker: UIViewControllerRepresentable {
 
       let existingSelection = parent.results
 
-
       Task {
         var newResults: [PhotoResult] = []
 
@@ -49,7 +48,6 @@ struct PhotoPicker: UIViewControllerRepresentable {
           for try result in results {
             let id = result.assetIdentifier!
             let firstItem = existingSelection.first(where: { $0.id == id })
-
 
             var item = firstItem?.item
 
