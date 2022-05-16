@@ -9,6 +9,7 @@ struct ContentView: View {
     VStack {
       Button(action: {
         isPresentedPhotoPicker = true
+        didPickPhoto = false
       }, label: {
         Image(systemName: "photo")
       })
