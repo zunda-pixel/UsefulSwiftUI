@@ -41,18 +41,32 @@ struct PhotoPicker: UIViewControllerRepresentable {
 
       let existingSelection = parent.results
 
-      var newResults: [PhotoResult] = []
 
-      for result in results {
-        let id = result.assetIdentifier!
-        let firstItem = existingSelection.first(where: { $0.id == id })
-        let provider = firstItem?.provider ?? result.itemProvider
-        let result: PhotoResult = .init(id: id, provider: provider, item: firstItem?.item)
-        newResults.append(result)
+      Task {
+        var newResults: [PhotoResult] = []
+
+        do {
+          for try result in results {
+            let id = result.assetIdentifier!
+            let firstItem = existingSelection.first(where: { $0.id == id })
+
+
+            var item = firstItem?.item
+
+            if item == nil {
+              item = try await result.itemProvider.loadPhoto()
+            }
+
+            let newResult: PhotoResult = .init(id: id, item: item!)
+            newResults.append(newResult)
+            parent.results = newResults
+          }
+
+          parent.didPickPhoto = true
+        } catch {
+          print(error)
+        }
       }
-
-      parent.results = newResults
-      parent.didPickPhoto = true
     }
   }
 }
