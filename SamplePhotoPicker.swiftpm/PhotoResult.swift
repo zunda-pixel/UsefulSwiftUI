@@ -1,7 +1,6 @@
 import Foundation
 
-struct PhotoResult {
+struct PhotoResult:Identifiable {
   let id: String
-  let provider: NSItemProvider
-  var item: NSItemProviderReading?
+  let item: NSItemProviderReading
 }
