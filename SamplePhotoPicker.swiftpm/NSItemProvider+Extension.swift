@@ -27,7 +27,7 @@ extension NSItemProvider {
         }
 
         guard let url = url else {
-          return continuation.resume(throwing: NSError())
+          return continuation.resume(throwing: PhotoError.missingData)
         }
 
         let localURL = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
@@ -52,7 +52,7 @@ extension NSItemProvider {
         }
 
         guard let data = data else {
-          return continuation.resume(throwing: NSError())
+          return continuation.resume(throwing: PhotoError.missingData)
         }
 
         continuation.resume(returning: data)
