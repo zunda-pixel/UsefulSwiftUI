@@ -20,8 +20,8 @@ struct ContentView: View {
       }
 
       ScrollView(.vertical) {
-        ForEach(0..<results.count, id: \.self) { i in
-          PhotoView(provider: results[i].provider, item: .init(get: { results[i].item }, set: { results[i].item = $0 }))
+        ForEach(results) { result in
+          PhotoView(item: result.item)
             .frame(height: 300)
         }
       }
