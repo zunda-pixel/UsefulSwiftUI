@@ -10,7 +10,7 @@ import AppleProductTypes
 let package = Package(
     name: "SamplePhotoPicker",
     platforms: [
-        .iOS("15.2")
+        .iOS("15.0")
     ],
     products: [
         .iOSApplication(
@@ -34,9 +34,15 @@ let package = Package(
             ]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/zunda-pixel/PhotoPicker", "1.0.0"..<"2.0.0")
+    ],
     targets: [
         .executableTarget(
             name: "AppModule",
+            dependencies: [
+                .product(name: "PhotoPicker", package: "photopicker")
+            ],
             path: "."
         )
     ]

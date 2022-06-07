@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PhotoPicker",
+        "repositoryURL": "https://github.com/zunda-pixel/PhotoPicker",
+        "state": {
+          "branch": null,
+          "revision": "90ba6f2bdd4357948746c8a815b1c0dfab3eda28",
+          "version": "1.0.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
